@@ -21,9 +21,3 @@ export const messageTable = mysqlTable(
   },
   (table) => [index("user_id_idx").on(table.userId)],
 );
-
-export const usageTable = mysqlTable("usage", {
-  key: varchar("key", { length: 255 }).primaryKey(),
-  points: int("points").notNull(),
-  expire: timestamp("expire"),
-});

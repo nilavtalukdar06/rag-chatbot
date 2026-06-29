@@ -4,6 +4,7 @@ import { google } from "@ai-sdk/google";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/db/db";
 import { messageTable } from "@/db/schema/schema";
+import StatusCodes from "http-status-codes";
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
     console.error(error);
     return NextResponse.json(
       { error: "Failed to generate response" },
-      { status: 500 },
+      { status: StatusCodes.INTERNAL_SERVER_ERROR },
     );
   }
 }

@@ -8,7 +8,7 @@ import {
   MessageContent,
   MessageResponse,
 } from "@/components/elements/message";
-import { Bot, MessageSquare } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import {
   Conversation,
   ConversationContent,
@@ -20,22 +20,35 @@ import { useEffect } from "react";
 import { getMessages } from "@/server/message";
 import type { UIMessage } from "ai";
 
-export type ExtendedUIMessage = UIMessage<{ createdAt: Date }>;
+export interface ExtendedUIMessage extends UIMessage {
+  metadata?: {
+    type: string;
+    userId: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+}
 
 type DBMessage = {
   id: number;
+  type: string;
   role: "user" | "assistant" | "system";
   content: string;
-  createdAt: Date | string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
-function dbMessageToUIMessage(dbMessage: DBMessage): ExtendedUIMessage {
+function dbMessageToUIMessage(message: DBMessage): ExtendedUIMessage {
   return {
-    id: dbMessage.id.toString(),
-    role: dbMessage.role,
-    parts: [{ type: "text", text: dbMessage.content }],
+    id: message.id.toString(),
+    role: message.role as "system" | "user" | "assistant",
+    parts: [{ type: "text", text: message.content }],
     metadata: {
-      createdAt: new Date(dbMessage.createdAt),
+      type: message.type.toLowerCase(),
+      userId: message.userId,
+      createdAt: message.createdAt,
+      updatedAt: message.updatedAt,
     },
   };
 }
@@ -68,7 +81,7 @@ export function MessageContainer() {
     if (data) {
       setMessages(
         data
-          .map((message) => dbMessageToUIMessage(message as DBMessage))
+          .map((message: any) => dbMessageToUIMessage(message as DBMessage))
           .reverse(),
       );
     }
@@ -97,12 +110,6 @@ export function MessageContainer() {
                         >
                           {message.role === "assistant" && (
                             <div className="flex flex-col items-start justify-center gap-y-2">
-                              <div className="flex justify-start items-center gap-x-2">
-                                <Bot size={18} />
-                                <span className="text-sm font-medium">
-                                  Assistant
-                                </span>
-                              </div>
                               <p className="text-muted-foreground text-xs font-light">
                                 {new Intl.DateTimeFormat("en-US", {
                                   month: "short",
@@ -112,7 +119,9 @@ export function MessageContainer() {
                                   minute: "numeric",
                                   hour12: true,
                                 }).format(
-                                  message.metadata?.createdAt || new Date(),
+                                  message.metadata?.createdAt
+                                    ? new Date(message.metadata.createdAt)
+                                    : new Date(),
                                 )}
                               </p>
                             </div>
@@ -129,10 +138,6 @@ export function MessageContainer() {
           )}
           {status === "submitted" && (
             <div className="flex flex-col items-start justify-center gap-y-2">
-              <div className="flex justify-start items-center gap-x-2">
-                <Bot size={18} />
-                <span className="text-sm font-medium">Assistant</span>
-              </div>
               <Shimmer duration={1} className="font-light text-sm">
                 Loading...
               </Shimmer>
@@ -140,10 +145,6 @@ export function MessageContainer() {
           )}
           {status === "error" && (
             <div className="flex flex-col items-start justify-center gap-y-2">
-              <div className="flex justify-start items-center gap-x-2">
-                <Bot size={18} />
-                <span className="text-sm font-medium">Assistant</span>
-              </div>
               <p className="text-sm text-red-500 font-light">
                 Failed to fulfill your request, please try again later.
               </p>
