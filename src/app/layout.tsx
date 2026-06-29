@@ -5,6 +5,7 @@ import "@/styles/globals.css";
 import { cn } from "@/lib/utils";
 import { ReactQueryProvider } from "@/components/query-client";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -31,7 +32,7 @@ export default function RootLayout({
       <ReactQueryProvider>
         <html lang="en" className={cn("font-sans", geist.variable)}>
           <body>
-            {children}
+            <TooltipProvider>{children}</TooltipProvider>
             <Toaster />
           </body>
         </html>
