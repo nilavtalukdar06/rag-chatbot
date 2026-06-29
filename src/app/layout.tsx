@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import "@/styles/globals.css";
 import { cn } from "@/lib/utils";
 
@@ -18,8 +19,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
-      <body className="h-full w-full">{children}</body>
-    </html>
+    <ClerkProvider
+      appearance={{
+        options: {
+          unsafe_disableDevelopmentModeWarnings: true,
+        },
+      }}
+    >
+      <html lang="en" className={cn("font-sans", geist.variable)}>
+        <body className="h-full w-full max-w-3xl mx-auto">{children}</body>
+      </html>
+    </ClerkProvider>
   );
 }
