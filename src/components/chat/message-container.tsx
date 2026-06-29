@@ -2,7 +2,7 @@
 
 import { PromptInput } from "./prompt-input";
 import { useChat } from "@ai-sdk/react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   Message,
   MessageContent,
@@ -41,7 +41,7 @@ function dbMessageToUIMessage(dbMessage: DBMessage): ExtendedUIMessage {
 }
 
 export function MessageContainer() {
-  const { data } = useSuspenseQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["messages"],
     queryFn: async () => {
       return await getMessages();

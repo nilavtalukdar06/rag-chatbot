@@ -43,7 +43,7 @@ export function PromptInput({ sendMessage, status }: Props) {
           className="flex field-sizing-content min-h-16 w-full resize-none rounded-2xl bg-transparent px-3 py-2.5 text-base transition-[color,box-shadow] outline-none md:text-sm"
           placeholder="Enter your prompt"
           value={prompt}
-          disabled={!prompt || mutation.isPending}
+          disabled={mutation.isPending}
           onChange={(e) => setPrompt(e.target.value)}
         />
         <InputGroupAddon align="block-end">
