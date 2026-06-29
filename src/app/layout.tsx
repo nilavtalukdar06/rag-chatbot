@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import "@/styles/globals.css";
 import { cn } from "@/lib/utils";
+import { ReactQueryProvider } from "@/components/query-client";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -26,9 +27,11 @@ export default function RootLayout({
         },
       }}
     >
-      <html lang="en" className={cn("font-sans", geist.variable)}>
-        <body className="h-full w-full max-w-3xl mx-auto">{children}</body>
-      </html>
+      <ReactQueryProvider>
+        <html lang="en" className={cn("font-sans", geist.variable)}>
+          <body className="h-full w-full max-w-3xl mx-auto">{children}</body>
+        </html>
+      </ReactQueryProvider>
     </ClerkProvider>
   );
 }
