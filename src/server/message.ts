@@ -25,7 +25,7 @@ export const createMessage = async (text: string) => {
       "you have exceeded your prompt limit",
     );
   }
-  const result = await db.insert(messageTable).values({
+  const [result] = await db.insert(messageTable).values({
     type: "result",
     role: "user",
     content: text,
@@ -39,7 +39,7 @@ export const gerMessages = async () => {
   if (!isAuthenticated) {
     throw new ApiError(StatusCodes.UNAUTHORIZED, false, "unauthorized user");
   }
-  const result = await db
+  const [result] = await db
     .select()
     .from(messageTable)
     .where(eq(messageTable.userId, userId))
@@ -52,7 +52,7 @@ export const deleteMessages = async () => {
   if (!isAuthenticated) {
     throw new ApiError(StatusCodes.UNAUTHORIZED, false, "unauthorized user");
   }
-  const result = await db
+  const [result] = await db
     .delete(messageTable)
     .where(eq(messageTable.userId, userId));
   return result;
