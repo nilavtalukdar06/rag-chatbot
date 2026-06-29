@@ -1,4 +1,4 @@
-import mysql from "mysql2/promise";
+import mysql from "mysql2";
 import { drizzle } from "drizzle-orm/mysql2";
 
 export const pool = mysql.createPool(process.env.DATABASE_URL!);

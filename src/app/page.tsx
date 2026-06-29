@@ -1,12 +1,14 @@
+import { MessageContainer } from "@/components/chat/message-container";
 import { PromptProvider } from "@/components/context/prompt-context";
-import { User } from "@/components/user";
+import { Navbar } from "@/components/navbar";
 
 export default function Home() {
   return (
-    <PromptProvider>
-      <div className="w-full p-4">
-        <User />
-      </div>
-    </PromptProvider>
+    <div className="h-screen w-full max-w-3xl mx-auto flex flex-col">
+      <Navbar />
+      <PromptProvider>
+        <MessageContainer />
+      </PromptProvider>
+    </div>
   );
 }

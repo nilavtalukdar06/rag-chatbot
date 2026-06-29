@@ -58,13 +58,13 @@ export function DeleteMessages() {
             <Button variant="outline" disabled={mutation.isPending}>
               Cancel
             </Button>
-            <Button
-              onClick={() => mutation.mutate()}
-              disabled={mutation.isPending}
-            >
-              {mutation.isPending ? <Spinner /> : "Delete"}
-            </Button>
           </DialogClose>
+          <Button
+            onClick={() => mutation.mutate()}
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? <Spinner /> : "Delete"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
