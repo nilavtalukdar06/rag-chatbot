@@ -1,3 +1,5 @@
+"use client";
+
 import { Show, UserButton } from "@clerk/nextjs";
 import { Coins } from "lucide-react";
 
@@ -8,7 +10,7 @@ export function User() {
         <UserButton.MenuItems>
           <UserButton.Link
             label="Pricing Page"
-            labelIcon={<Coins />}
+            labelIcon={<Coins size={16} />}
             href="/pricing"
           />
         </UserButton.MenuItems>
