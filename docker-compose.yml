@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant_db
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: always
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: my_app_db
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: userpassword
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: always
+volumes:
+  qdrant_data:
+  mysql_data:
