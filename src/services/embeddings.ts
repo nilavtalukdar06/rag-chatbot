@@ -5,10 +5,12 @@ import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 
 export abstract class EmbeddingService {
   constructor() {}
-  static async generateDocsEmbeddings(content: string) {
+  static async generateDocsEmbeddings(content: string, userId: string) {
     const document = new Document({
       pageContent: content,
-      metadata: {},
+      metadata: {
+        userId,
+      },
     });
     const splitter = new RecursiveCharacterTextSplitter({
       chunkSize: 1000,
