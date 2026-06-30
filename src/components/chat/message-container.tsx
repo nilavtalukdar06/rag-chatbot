@@ -17,7 +17,7 @@ import {
 } from "@/components/elements/conversation";
 import { Shimmer } from "@/components/elements/shimmer";
 import { useEffect } from "react";
-import { getMessages } from "@/server/message";
+import axios from "axios";
 import type { UIMessage } from "ai";
 
 export interface ExtendedUIMessage extends UIMessage {
@@ -54,10 +54,11 @@ function dbMessageToUIMessage(message: DBMessage): ExtendedUIMessage {
 }
 
 export function MessageContainer() {
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ["messages"],
     queryFn: async () => {
-      return await getMessages();
+      const { data } = await axios.get("/api/messages");
+      return data;
     },
   });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { uploadPdf } from "@/server/upload";
+import axios from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -31,7 +31,8 @@ export function UploadButton() {
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append("pdf", file);
-      await uploadPdf(formData);
+      const { data } = await axios.post("/api/upload", formData);
+      return data;
     },
     onSuccess: () => {
       toast.success("Successfully uploaded document");
@@ -41,7 +42,7 @@ export function UploadButton() {
       setIsOpen(false);
     },
     onError: (error: any) => {
-      toast.error(error.message);
+      toast.error(error?.response?.data?.error || error.message);
     },
   });
 

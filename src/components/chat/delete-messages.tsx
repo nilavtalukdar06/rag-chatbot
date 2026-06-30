@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteMessages } from "@/server/message";
+import axios from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -23,7 +23,8 @@ export function DeleteMessages() {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: async () => {
-      await deleteMessages();
+      const { data } = await axios.delete("/api/messages");
+      return data;
     },
     onSuccess: () => {
       toast.success("Successfully deleted messages");
@@ -32,8 +33,8 @@ export function DeleteMessages() {
       });
       setIsOpen(false);
     },
-    onError: (error) => {
-      toast.error(error.message);
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.error || error.message);
     },
   });
   return (

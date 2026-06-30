@@ -9,7 +9,7 @@ import {
 import { usePrompt } from "../context/prompt-context";
 import TextareaAutosize from "react-textarea-autosize";
 import { useMutation } from "@tanstack/react-query";
-import { createMessage } from "@/server/message";
+import axios from "axios";
 import { toast } from "sonner";
 import { ArrowUpIcon } from "lucide-react";
 import { Spinner } from "../ui/spinner";
@@ -24,15 +24,15 @@ export function PromptInput({ sendMessage, status }: Props) {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const result = await createMessage(prompt);
-      return result;
+      const { data } = await axios.post("/api/messages", { text: prompt });
+      return data;
     },
     onSuccess: () => {
       sendMessage({ text: prompt });
       setPrompt("");
     },
-    onError: (error) => {
-      toast.error(error.message);
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.error || error.message);
     },
   });
   return (
