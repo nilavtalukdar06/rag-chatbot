@@ -42,7 +42,7 @@ graph TD
 
     subgraph "Document Processing Pipeline"
     C(PDF Parser & Text Splitter):::backend
-    D[Embedding Model]::ai
+    D[Embedding Model]:::ai
     C -->|Chunks| D
     D -->|Vectors| E
     end
