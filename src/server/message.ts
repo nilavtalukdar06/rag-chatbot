@@ -4,7 +4,6 @@ import { auth } from "@clerk/nextjs/server";
 import { desc, eq } from "drizzle-orm";
 import { db } from "@/db/db";
 import { messageTable } from "@/db/schema/schema";
-import { UsageService } from "@/services/usage";
 
 async function getCurrentUserId() {
   const { userId, isAuthenticated } = await auth();
@@ -15,18 +14,10 @@ async function getCurrentUserId() {
 }
 
 export async function createMessage(text: string) {
-  const { has } = await auth();
   const userId = await getCurrentUserId();
   const prompt = text.trim();
   if (!prompt) {
     throw new Error("Prompt is required");
-  }
-  const isPro = has({ plan: "pro" });
-  if (!isPro) {
-    const usage = await UsageService.consumeChatCredit(userId);
-    if (!usage.success) {
-      throw new Error("Daily limit reached.");
-    }
   }
   const result = await db.insert(messageTable).values({
     userId,
