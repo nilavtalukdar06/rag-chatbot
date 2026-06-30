@@ -4,8 +4,6 @@ import { UsageService } from "@/services/usage";
 import { extractText } from "unpdf";
 import { EmbeddingService } from "@/services/embeddings";
 
-export const runtime = "nodejs";
-
 export async function POST(req: Request) {
   try {
     const { has, userId, isAuthenticated } = await auth();
@@ -35,15 +33,22 @@ export async function POST(req: Request) {
     }
     const isPro = has({ plan: "pro" });
     if (!isPro) {
-      const usage = await UsageService.consumeChatCredit(userId);
-      if (!usage.success) {
+      const usage = await UsageService.canUpload(userId);
+      if (!usage.allowed) {
         return NextResponse.json(
-          { error: "Daily limit reached." },
+          {
+            error:
+              "You have reached your free upload limit (3 documents). Upgrade to Pro for unlimited uploads.",
+          },
           { status: 403 },
         );
       }
     }
     const result = await EmbeddingService.generateDocsEmbeddings(text, userId);
+    const isPro2 = has({ plan: "pro" });
+    if (!isPro2) {
+      await UsageService.recordUpload(userId);
+    }
     return NextResponse.json({
       success: true,
       data: result,

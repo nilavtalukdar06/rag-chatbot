@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -27,6 +27,20 @@ const FilePicker = dynamic(
 export function UploadButton() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const queryClient = useQueryClient();
+
+  const { data: usage } = useQuery({
+    queryKey: ["usage"],
+    queryFn: async () => {
+      const { data } = await axios.get("/api/usage");
+      return data as {
+        isPro: boolean;
+        used: number;
+        limit: number;
+        remaining: number;
+      };
+    },
+  });
+
   const mutation = useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
@@ -39,12 +53,17 @@ export function UploadButton() {
       queryClient.invalidateQueries({
         queryKey: ["documents"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["usage"],
+      });
       setIsOpen(false);
     },
     onError: (error: any) => {
       toast.error(error?.response?.data?.error || error.message);
     },
   });
+
+  const hasReachedLimit = usage && !usage.isPro && usage.remaining <= 0;
 
   return (
     <Dialog open={isOpen || mutation.isPending} onOpenChange={setIsOpen}>
@@ -60,6 +79,11 @@ export function UploadButton() {
           <DialogDescription className="text-muted-foreground font-light">
             Please select a PDF document from your device to upload and generate
             embeddings.
+            {usage && !usage.isPro && (
+              <span className="block mt-1">
+                {usage.remaining} of {usage.limit} free uploads remaining.
+              </span>
+            )}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -68,16 +92,20 @@ export function UploadButton() {
               Cancel
             </Button>
           </DialogClose>
-          <FilePicker
-            extensions={["pdf"]}
-            maxSize={10}
-            onChange={(file: File) => mutation.mutate(file)}
-            onError={(error: string) => toast.error(error)}
-          >
-            <Button disabled={mutation.isPending}>
-              {mutation.isPending ? <Spinner /> : "Upload"}
-            </Button>
-          </FilePicker>
+          {hasReachedLimit ? (
+            <Button disabled>No uploads remaining</Button>
+          ) : (
+            <FilePicker
+              extensions={["pdf"]}
+              maxSize={10}
+              onChange={(file: File) => mutation.mutate(file)}
+              onError={(error: string) => toast.error(error)}
+            >
+              <Button disabled={mutation.isPending}>
+                {mutation.isPending ? <Spinner /> : "Upload"}
+              </Button>
+            </FilePicker>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

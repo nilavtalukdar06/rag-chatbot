@@ -4,8 +4,6 @@ import { desc, eq } from "drizzle-orm";
 import { db } from "@/db/db";
 import { messageTable } from "@/db/schema/schema";
 
-export const runtime = "nodejs";
-
 async function getCurrentUserId() {
   const { userId, isAuthenticated } = await auth();
   if (!isAuthenticated || !userId) {

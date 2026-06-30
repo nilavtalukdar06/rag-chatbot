@@ -22,8 +22,12 @@ export const messageTable = mysqlTable(
   (table) => [index("user_id_idx").on(table.userId)],
 );
 
-export const usage = mysqlTable("rate_limiter", {
-  key: varchar("key", { length: 255 }).primaryKey(),
-  points: int("points").notNull(),
-  expire: timestamp("expire"),
-});
+export const documentUploadTable = mysqlTable(
+  "document_uploads",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: varchar("user_id", { length: 255 }).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [index("upload_user_id_idx").on(table.userId)],
+);
