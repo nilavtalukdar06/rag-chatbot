@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { desc, eq } from "drizzle-orm";
 import { db } from "@/db/db";
 import { messageTable } from "@/db/schema/schema";
-import { UsageService } from "@/utils/usage";
+import { UsageService } from "@/services/usage";
 
 async function getCurrentUserId() {
   const { userId, isAuthenticated } = await auth();
