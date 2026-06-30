@@ -1,10 +1,10 @@
-import { freeChatLimiter } from "@/lib/rate-limit";
+import { getFreeChatLimiter } from "@/lib/rate-limit";
 
 export abstract class UsageService {
   constructor() {}
   static async consumeChatCredit(userId: string) {
     try {
-      const result = await freeChatLimiter.consume(userId);
+      const result = await getFreeChatLimiter().consume(userId);
       return {
         success: true,
         remainingPoints: result.remainingPoints,
@@ -21,7 +21,7 @@ export abstract class UsageService {
     }
   }
   static async getChatUsage(userId: string) {
-    const result = await freeChatLimiter.get(userId);
+    const result = await getFreeChatLimiter().get(userId);
     if (!result) {
       return {
         used: 0,
