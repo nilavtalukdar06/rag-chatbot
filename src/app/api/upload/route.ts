@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { UsageService } from "@/services/usage";
-import { PDFParse } from "pdf-parse";
+import { extractText } from "unpdf";
 import { EmbeddingService } from "@/services/embeddings";
 
 export const runtime = "nodejs";
@@ -15,7 +15,6 @@ export async function POST(req: Request) {
         { status: 401 },
       );
     }
-
     const formData = await req.formData();
     const file = formData.get("pdf") as File | null;
     if (!file) {
@@ -24,18 +23,16 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-
     const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const parser = new PDFParse({ data: buffer });
-    const data = await parser.getText();
-    if (!data.text || data.text.trim().length === 0) {
+    const buffer = new Uint8Array(bytes);
+    const { text: pages } = await extractText(buffer);
+    const text = pages.join("\n");
+    if (!text || text.trim().length === 0) {
       return NextResponse.json(
         { error: "no text is present" },
         { status: 400 },
       );
     }
-
     const isPro = has({ plan: "pro" });
     if (!isPro) {
       const usage = await UsageService.consumeChatCredit(userId);
@@ -46,11 +43,7 @@ export async function POST(req: Request) {
         );
       }
     }
-
-    const result = await EmbeddingService.generateDocsEmbeddings(
-      data.text,
-      userId,
-    );
+    const result = await EmbeddingService.generateDocsEmbeddings(text, userId);
     return NextResponse.json({
       success: true,
       data: result,
