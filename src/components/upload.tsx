@@ -17,7 +17,12 @@ import {
 import { Button } from "./ui/button";
 import { UploadIcon } from "lucide-react";
 import { Spinner } from "./ui/spinner";
-import { FilePicker } from "react-file-picker";
+import dynamic from "next/dynamic";
+
+const FilePicker = dynamic(
+  () => import("react-file-picker").then((mod) => mod.FilePicker),
+  { ssr: false },
+);
 
 export function UploadButton() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -64,6 +69,7 @@ export function UploadButton() {
           </DialogClose>
           <FilePicker
             extensions={["pdf"]}
+            maxSize={10}
             onChange={(file: File) => mutation.mutate(file)}
             onError={(error: string) => toast.error(error)}
           >
