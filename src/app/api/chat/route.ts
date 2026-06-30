@@ -5,6 +5,8 @@ import { auth } from "@clerk/nextjs/server";
 import { db } from "@/db/db";
 import { messageTable } from "@/db/schema/schema";
 import StatusCodes from "http-status-codes";
+import { SYSTEM_PROMPT } from "@/lib/system-prompt";
+import { retrieveDocumentsTool } from "@/tools/retrieve-document";
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,6 +17,7 @@ export async function POST(request: NextRequest) {
     const { messages }: { messages: UIMessage[] } = await request.json();
     const result = streamText({
       model: google("gemini-2.5-flash"),
+      system: SYSTEM_PROMPT,
       messages: await convertToModelMessages(messages),
       onFinish: async ({ text }) => {
         await db.insert(messageTable).values({
@@ -23,6 +26,9 @@ export async function POST(request: NextRequest) {
           content: text,
           userId,
         });
+      },
+      tools: {
+        retrieveDocuments: retrieveDocumentsTool(userId),
       },
     });
     return result.toUIMessageStreamResponse();
