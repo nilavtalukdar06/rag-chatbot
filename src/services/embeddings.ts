@@ -26,6 +26,7 @@ export abstract class EmbeddingService {
       embeddings,
       {
         url: process.env.QDRANT_URL,
+        apiKey: process.env.QDRANT_API_KEY,
         collectionName: "rag-chatbot",
       },
     );
@@ -40,6 +41,7 @@ export abstract class EmbeddingService {
       embeddings,
       {
         url: process.env.QDRANT_URL,
+        apiKey: process.env.QDRANT_API_KEY,
         collectionName: "rag-chatbot",
       },
     );
